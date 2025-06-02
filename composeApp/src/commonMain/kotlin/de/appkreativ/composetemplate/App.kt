@@ -1,37 +1,37 @@
 package de.appkreativ.composetemplate
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material.Button
 import androidx.compose.material.MaterialTheme
 import androidx.compose.material.Text
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import org.jetbrains.compose.resources.painterResource
+import androidx.compose.runtime.Composable
+import de.appkreativ.composetemplate.navigation.Screen
+import kotlinx.serialization.Serializable
+import org.jetbrains.compose.resources.stringResource
 import org.jetbrains.compose.ui.tooling.preview.Preview
-
-import ak_composemultiplatform_template.composeapp.generated.resources.Res
-import ak_composemultiplatform_template.composeapp.generated.resources.compose_multiplatform
 
 @Composable
 @Preview
 fun App() {
     MaterialTheme {
-        var showContent by remember { mutableStateOf(false) }
-        Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-            Button(onClick = { showContent = !showContent }) {
-                Text("Click me! I am a new project")
+        val start = stringResource(Screen.Start.title)
+        Button(
+            onClick = { onNavigate(page = start) },
+            content = {
+                Text("Go to page 2")
             }
-            AnimatedVisibility(showContent) {
-                val greeting = remember { Greeting().greet() }
-                Column(Modifier.fillMaxWidth(), horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(painterResource(Res.drawable.compose_multiplatform), null)
-                    Text("Compose: $greeting")
-                }
-            }
-        }
+        )
     }
 }
+
+fun onNavigate(page: String) {
+
+}
+
+@Serializable
+object ScreenA
+
+@Serializable
+data class ScreenB(
+    val name: String?,
+    val age: Int
+)
