@@ -1,33 +1,30 @@
-rootProject.name = "AK-ComposeMultiplatform-Template"
+rootProject.name = "akcmptemplate"
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        google()
         mavenCentral()
         gradlePluginPortal()
+        maven("https://packages.jetbrains.team/maven/p/firework/dev")
     }
 }
 
 dependencyResolutionManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
+        google()
         mavenCentral()
+        maven("https://packages.jetbrains.team/maven/p/firework/dev")
     }
 }
 
-include(":composeApp")
-include(":server")
-include(":shared")
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "0.9.0"
+}
+
+include(":app")
+include(":backend")
+include(":shared:data")
+include(":shared:domain")
+include(":shared:presentation")
