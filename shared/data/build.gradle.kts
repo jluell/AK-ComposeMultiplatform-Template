@@ -9,7 +9,11 @@ plugins {
 kotlin {
     androidTarget {
         compilerOptions {
-            jvmTarget = JvmTarget.JVM_11
+            jvmTarget.set(
+                libs.versions.android.jvmTarget.map { version ->
+                    JvmTarget.fromTarget(version)
+                }
+            )
         }
     }
     iosX64()

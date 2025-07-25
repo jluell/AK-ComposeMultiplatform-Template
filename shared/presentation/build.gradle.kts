@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -8,10 +10,12 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = libs.versions.android.jvmTarget.get()
-            }
+        compilerOptions {
+            jvmTarget.set(
+                libs.versions.android.jvmTarget.map { version ->
+                    JvmTarget.fromTarget(version)
+                }
+            )
         }
     }
     iosX64()
@@ -40,7 +44,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.material3)
-            implementation(libs.cashapp.paging.compose.common)
+//            implementation(libs.androidx.paging.compose)
             implementation(projects.shared.data)
         }
         androidMain.dependencies {

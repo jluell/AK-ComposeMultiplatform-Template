@@ -1,3 +1,5 @@
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -6,10 +8,12 @@ plugins {
 
 kotlin {
     androidTarget {
-        compilations.all {
-            kotlinOptions {
-                jvmTarget = libs.versions.android.jvmTarget.get()
-            }
+        compilerOptions {
+            jvmTarget.set(
+                libs.versions.android.jvmTarget.map { version ->
+                    JvmTarget.fromTarget(version)
+                }
+            )
         }
     }
     iosX64()
