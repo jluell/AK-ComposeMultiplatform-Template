@@ -44,7 +44,7 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.material3)
-//            implementation(libs.androidx.paging.compose)
+            implementation(libs.cashapp.paging.compose.common)
             implementation(projects.shared.data)
         }
         androidMain.dependencies {
