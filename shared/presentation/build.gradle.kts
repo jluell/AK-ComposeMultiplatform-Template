@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -9,15 +7,7 @@ plugins {
 }
 
 kotlin {
-    androidTarget {
-        compilerOptions {
-            jvmTarget.set(
-                libs.versions.android.jvmTarget.map { version ->
-                    JvmTarget.fromTarget(version)
-                }
-            )
-        }
-    }
+    androidTarget()
     iosX64()
     iosArm64()
     iosSimulatorArm64()
@@ -29,6 +19,7 @@ kotlin {
     sourceSets {
         all {
             languageSettings {
+                optIn("kotlin.time.ExperimentalTime")
                 optIn("kotlinx.coroutines.ExperimentalCoroutinesApi")
                 optIn("androidx.compose.material3.ExperimentalMaterial3Api")
                 optIn("org.jetbrains.compose.resources.ExperimentalResourceApi")
@@ -36,7 +27,6 @@ kotlin {
         }
         commonMain.dependencies {
             api(compose.foundation)
-            api(libs.kotlinx.datetime)
             api(libs.kotlinx.coroutines.core)
             api(libs.kotlinx.serialization.json)
             api(libs.androidx.navigation.compose)
@@ -44,8 +34,6 @@ kotlin {
             implementation(compose.components.resources)
             implementation(compose.components.uiToolingPreview)
             implementation(compose.material3)
-            implementation(libs.cashapp.paging.compose.common)
-            implementation(projects.shared.data)
         }
         androidMain.dependencies {
             api(libs.androidx.appcompat)
@@ -55,13 +43,6 @@ kotlin {
         jvmMain.dependencies {
             api(libs.kotlinx.coroutines.swing)
         }
-        val mobileAndDesktopMain by creating {
-            dependsOn(commonMain.get())
-            dependencies {
-            }
-        }
-        androidMain.get().dependsOn(mobileAndDesktopMain)
-
         val skikoMain by creating {
             dependsOn(commonMain.get())
         }

@@ -2,10 +2,13 @@ package shared.presentation.ui.component
 
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ElevatedButton
+import androidx.compose.material3.FloatingActionButtonDefaults
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.SmallFloatingActionButton
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.NonRestartableComposable
 import androidx.compose.ui.Modifier
@@ -100,6 +103,28 @@ fun DsOutlinedButton(
                 DsSpacer8()
             }
             DsText(text = text)
+        }
+    )
+}
+
+@Composable
+@NonRestartableComposable
+fun DsSmallFloatingActionButton(
+    modifier: Modifier = Modifier,
+    containerColor: Color = FloatingActionButtonDefaults.containerColor,
+    contentColor: Color = contentColorFor(containerColor),
+    onClick: () -> Unit,
+    icon: DsIconModel?
+) {
+    SmallFloatingActionButton(
+        containerColor = containerColor,
+        contentColor = contentColor,
+        modifier = modifier,
+        onClick = onClick,
+        content = {
+            DsIcon(
+                model = icon
+            )
         }
     )
 }

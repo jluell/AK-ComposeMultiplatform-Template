@@ -297,7 +297,6 @@ internal class LazyGridScrollbarAdapter(
             if (isVertical) UnknownRow else UnknownColumn
         }
 
-
     private fun LazyGridItemInfo.line(): Int {
         return if (isVertical) row else column
     }

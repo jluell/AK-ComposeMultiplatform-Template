@@ -16,5 +16,3 @@ sealed class DsIconModel {
     data class Color(val value: UiColor) : DsIconModel()
     data class Url(val value: String?) : DsIconModel()
 }
-
-

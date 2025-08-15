@@ -32,7 +32,6 @@ internal class SliderAdapter(
     val thumbSize: Double
         get() = minHeightDouble
 
-
     private val scrollScale: Double
         get() {
             val extraScrollbarSpace = trackSize - thumbSize
@@ -58,7 +57,6 @@ internal class SliderAdapter(
 
             return (start until endExclusive)
         }
-
 
     // How much of the current drag was ignored because we've reached the end of the scrollbar area
     private var unscrolledDragDistance = 0.0

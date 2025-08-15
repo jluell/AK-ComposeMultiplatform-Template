@@ -10,11 +10,12 @@ import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.LocalViewModelStoreOwner
+import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
-import androidx.lifecycle.viewmodel.compose.viewModel
 import kotlin.coroutines.CoroutineContext
 
 /**
@@ -32,7 +33,7 @@ abstract class BaseViewModel : ViewModel() {
     /**
      * Take a MutableSnapshot and run block within it on the main thread.
      */
-    fun withState(block: () -> Unit) {
+    protected fun withState(block: () -> Unit) {
         viewModelScope.launch(Dispatchers.Main.immediate) {
             Snapshot.withMutableSnapshot(block)
         }
@@ -166,15 +167,4 @@ abstract class BaseViewModel : ViewModel() {
         doDispose()
     }
 
-}
-
-@Stable
-@Composable
-inline fun <reified VM : BaseViewModel> provideViewModel(
-    key: String? = null,
-    factory: ViewModelProvider.Factory = LocalViewModelFactory.current
-): VM {
-    val viewModel: VM = viewModel(key = key, factory = factory)
-    viewModel.bind()
-    return viewModel
 }
