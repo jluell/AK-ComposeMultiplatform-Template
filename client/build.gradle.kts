@@ -1,4 +1,4 @@
-import org.jetbrains.compose.reload.ComposeHotRun
+import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
