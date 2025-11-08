@@ -48,6 +48,8 @@ kotlin {
         commonMain.dependencies {
             implementation(compose.components.resources)
             implementation(libs.koin.compose.viewmodel.navigation)
+            implementation(projects.shared.core)
+            implementation(projects.shared.data)
             implementation(projects.shared.domain)
             implementation(projects.shared.presentation)
         }

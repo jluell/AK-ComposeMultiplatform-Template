@@ -25,5 +25,7 @@ plugins {
 
 include(":client")
 include(":server")
+include(":shared:core")
+include(":shared:data")
 include(":shared:domain")
 include(":shared:presentation")

@@ -1,6 +1,5 @@
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.android.library)
 }
 
@@ -16,14 +15,13 @@ kotlin {
     applyDefaultHierarchyTemplate()
     sourceSets {
         commonMain.dependencies {
-            implementation(projects.shared.core)
-            implementation(libs.kotlinx.serialization.json)
+            // No external dependencies - core utilities only
         }
     }
 }
 
 android {
-    namespace = "shared.domain"
+    namespace = "shared.core"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility(libs.versions.android.jvmTarget.get())
@@ -33,3 +31,4 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
+

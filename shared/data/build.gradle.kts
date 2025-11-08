@@ -17,13 +17,31 @@ kotlin {
     sourceSets {
         commonMain.dependencies {
             implementation(projects.shared.core)
+            implementation(projects.shared.domain)
+            implementation(libs.ktor.client.core)
+            implementation(libs.ktor.client.content.negotiation)
+            implementation(libs.ktor.client.serialization.kotlinx.json)
+            implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
+            implementation(libs.kotlinx.coroutines.core)
+        }
+        androidMain.dependencies {
+            implementation(libs.ktor.client.android)
+        }
+        iosMain.dependencies {
+            implementation(libs.ktor.client.ios)
+        }
+        jsMain.dependencies {
+            implementation(libs.ktor.client.js)
+        }
+        jvmMain.dependencies {
+            implementation(libs.ktor.client.jvm)
         }
     }
 }
 
 android {
-    namespace = "shared.domain"
+    namespace = "shared.data"
     compileSdk = libs.versions.android.compileSdk.get().toInt()
     compileOptions {
         sourceCompatibility(libs.versions.android.jvmTarget.get())
@@ -33,3 +51,4 @@ android {
         minSdk = libs.versions.android.minSdk.get().toInt()
     }
 }
+
