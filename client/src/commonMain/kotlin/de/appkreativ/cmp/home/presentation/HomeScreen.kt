@@ -17,6 +17,6 @@ fun HomeScreen() {
         Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
-        DsText(text = "Home Screen auf iOS")
+        DsText(text = "Hurray, it is working on ${state.platformName}")
     }
 }
