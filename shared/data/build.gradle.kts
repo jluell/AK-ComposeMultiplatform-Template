@@ -2,6 +2,7 @@ plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
     alias(libs.plugins.android.library)
+    alias(libs.plugins.sqldelight)
 }
 
 kotlin {
@@ -27,15 +28,19 @@ kotlin {
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
+            implementation(libs.sqldelight.android.driver)
         }
         iosMain.dependencies {
             implementation(libs.ktor.client.ios)
+            implementation(libs.sqldelight.native.driver)
         }
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
+            implementation(libs.sqldelight.sqljs.driver)
         }
         jvmMain.dependencies {
             implementation(libs.ktor.client.jvm)
+            implementation(libs.sqldelight.sqlite.driver)
         }
     }
 }
@@ -49,6 +54,15 @@ android {
     }
     defaultConfig {
         minSdk = libs.versions.android.minSdk.get().toInt()
+    }
+}
+
+sqldelight {
+    databases {
+        create("BowlingDatabase") {
+            packageName.set("shared.data.database")
+            generateAsync.set(true)
+        }
     }
 }
 
