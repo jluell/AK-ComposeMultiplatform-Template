@@ -1,0 +1,370 @@
+-- Players table
+CREATE TABLE players (
+    id TEXT NOT NULL PRIMARY KEY,
+    name TEXT NOT NULL,
+    join_date TEXT NOT NULL,
+    is_active INTEGER NOT NULL DEFAULT 1,
+    created_at TEXT NOT NULL
+);
+
+CREATE INDEX players_active ON players(is_active);
+CREATE INDEX players_join_date ON players(join_date);
+
+-- Events table
+CREATE TABLE events (
+    id TEXT NOT NULL PRIMARY KEY,
+    date TEXT NOT NULL,
+    location TEXT NOT NULL DEFAULT 'Hotel zur Börse',
+    status TEXT NOT NULL,
+    created_at TEXT NOT NULL
+);
+
+CREATE INDEX events_date ON events(date);
+CREATE INDEX events_status ON events(status);
+
+-- Forty shot scores table
+CREATE TABLE forty_shot_scores (
+    id TEXT NOT NULL PRIMARY KEY,
+    event_id TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    total_score INTEGER NOT NULL,
+    nines_hit INTEGER NOT NULL,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE INDEX forty_shot_scores_event ON forty_shot_scores(event_id);
+CREATE INDEX forty_shot_scores_player ON forty_shot_scores(player_id);
+CREATE INDEX forty_shot_scores_event_player ON forty_shot_scores(event_id, player_id);
+
+-- Rounds table (for 40-shot scores)
+CREATE TABLE rounds (
+    id TEXT NOT NULL PRIMARY KEY,
+    score_id TEXT NOT NULL,
+    round_number INTEGER NOT NULL,
+    lane TEXT NOT NULL,
+    throw_1 INTEGER NOT NULL,
+    throw_2 INTEGER NOT NULL,
+    throw_3 INTEGER NOT NULL,
+    throw_4 INTEGER NOT NULL,
+    throw_5 INTEGER NOT NULL,
+    throw_6 INTEGER NOT NULL,
+    throw_7 INTEGER NOT NULL,
+    throw_8 INTEGER NOT NULL,
+    throw_9 INTEGER NOT NULL,
+    throw_10 INTEGER NOT NULL,
+    total INTEGER NOT NULL,
+    FOREIGN KEY(score_id) REFERENCES forty_shot_scores(id) ON DELETE CASCADE
+);
+
+CREATE INDEX rounds_score ON rounds(score_id);
+
+-- Penalties table
+CREATE TABLE penalties (
+    id TEXT NOT NULL PRIMARY KEY,
+    event_id TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    type TEXT NOT NULL,
+    amount REAL NOT NULL,
+    description TEXT,
+    created_at TEXT NOT NULL,
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE INDEX penalties_event ON penalties(event_id);
+CREATE INDEX penalties_player ON penalties(player_id);
+CREATE INDEX penalties_type ON penalties(type);
+CREATE INDEX penalties_event_player ON penalties(event_id, player_id);
+
+-- Coffin games table
+CREATE TABLE coffin_games (
+    id TEXT NOT NULL PRIMARY KEY,
+    event_id TEXT NOT NULL UNIQUE,
+    player_order TEXT NOT NULL, -- JSON array of player IDs
+    created_at TEXT NOT NULL,
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE
+);
+
+CREATE INDEX coffin_games_event ON coffin_games(event_id);
+
+-- Coffin turns table
+CREATE TABLE coffin_turns (
+    id TEXT NOT NULL PRIMARY KEY,
+    game_id TEXT NOT NULL,
+    turn_number INTEGER NOT NULL,
+    player_id TEXT NOT NULL,
+    score INTEGER NOT NULL,
+    boards_received INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY(game_id) REFERENCES coffin_games(id) ON DELETE CASCADE,
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE INDEX coffin_turns_game ON coffin_turns(game_id);
+CREATE INDEX coffin_turns_turn ON coffin_turns(game_id, turn_number);
+
+-- Coffin eliminations table
+CREATE TABLE coffin_eliminations (
+    id TEXT NOT NULL PRIMARY KEY,
+    game_id TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    elimination_turn INTEGER NOT NULL,
+    final_rank INTEGER NOT NULL,
+    FOREIGN KEY(game_id) REFERENCES coffin_games(id) ON DELETE CASCADE,
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE INDEX coffin_eliminations_game ON coffin_eliminations(game_id);
+CREATE INDEX coffin_eliminations_rank ON coffin_eliminations(game_id, final_rank);
+
+-- Dog sitters table
+CREATE TABLE dog_sitters (
+    id TEXT NOT NULL PRIMARY KEY,
+    event_id TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    assigned_date TEXT NOT NULL,
+    is_current INTEGER NOT NULL DEFAULT 0,
+    FOREIGN KEY(event_id) REFERENCES events(id) ON DELETE CASCADE,
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE INDEX dog_sitters_event ON dog_sitters(event_id);
+CREATE INDEX dog_sitters_player ON dog_sitters(player_id);
+CREATE INDEX dog_sitters_current ON dog_sitters(is_current);
+
+-- Yearly summaries table
+CREATE TABLE yearly_summaries (
+    id TEXT NOT NULL PRIMARY KEY,
+    year INTEGER NOT NULL UNIQUE,
+    overall_winner TEXT NOT NULL,
+    wet_dog_winner TEXT NOT NULL,
+    calculated_at TEXT NOT NULL,
+    FOREIGN KEY(overall_winner) REFERENCES players(id),
+    FOREIGN KEY(wet_dog_winner) REFERENCES players(id)
+);
+
+CREATE INDEX yearly_summaries_year ON yearly_summaries(year);
+
+-- Player rankings table (for yearly summaries)
+CREATE TABLE player_rankings (
+    id TEXT NOT NULL PRIMARY KEY,
+    summary_id TEXT NOT NULL,
+    player_id TEXT NOT NULL,
+    best_n_scores TEXT NOT NULL, -- JSON array of scores
+    best_n_total INTEGER NOT NULL,
+    rank INTEGER NOT NULL,
+    FOREIGN KEY(summary_id) REFERENCES yearly_summaries(id) ON DELETE CASCADE,
+    FOREIGN KEY(player_id) REFERENCES players(id) ON DELETE CASCADE
+);
+
+CREATE INDEX player_rankings_summary ON player_rankings(summary_id);
+CREATE INDEX player_rankings_rank ON player_rankings(summary_id, rank);
+
+-- Queries
+
+-- Players
+selectAll:
+SELECT * FROM players;
+
+selectById:
+SELECT * FROM players WHERE id = ?;
+
+selectActive:
+SELECT * FROM players WHERE is_active = 1;
+
+insertPlayer:
+INSERT INTO players(id, name, join_date, is_active, created_at)
+VALUES (?, ?, ?, ?, ?);
+
+updatePlayer:
+UPDATE players SET name = ?, join_date = ?, is_active = ? WHERE id = ?;
+
+deletePlayer:
+DELETE FROM players WHERE id = ?;
+
+-- Events
+selectAllEvents:
+SELECT * FROM events ORDER BY date DESC;
+
+selectEventById:
+SELECT * FROM events WHERE id = ?;
+
+selectEventByDate:
+SELECT * FROM events WHERE date = ?;
+
+selectEventsByStatus:
+SELECT * FROM events WHERE status = ? ORDER BY date DESC;
+
+insertEvent:
+INSERT INTO events(id, date, location, status, created_at)
+VALUES (?, ?, ?, ?, ?);
+
+updateEvent:
+UPDATE events SET date = ?, location = ?, status = ? WHERE id = ?;
+
+deleteEvent:
+DELETE FROM events WHERE id = ?;
+
+-- Forty Shot Scores
+selectScoreById:
+SELECT * FROM forty_shot_scores WHERE id = ?;
+
+selectScoresByEvent:
+SELECT * FROM forty_shot_scores WHERE event_id = ?;
+
+selectScoresByPlayer:
+SELECT * FROM forty_shot_scores WHERE player_id = ?;
+
+selectScoreByEventAndPlayer:
+SELECT * FROM forty_shot_scores WHERE event_id = ? AND player_id = ?;
+
+insertScore:
+INSERT INTO forty_shot_scores(id, event_id, player_id, total_score, nines_hit, created_at)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteScore:
+DELETE FROM forty_shot_scores WHERE id = ?;
+
+deleteScoresByEvent:
+DELETE FROM forty_shot_scores WHERE event_id = ?;
+
+-- Rounds
+selectRoundsByScore:
+SELECT * FROM rounds WHERE score_id = ? ORDER BY round_number;
+
+insertRound:
+INSERT INTO rounds(id, score_id, round_number, lane, throw_1, throw_2, throw_3, throw_4, throw_5, throw_6, throw_7, throw_8, throw_9, throw_10, total)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+
+deleteRoundsByScore:
+DELETE FROM rounds WHERE score_id = ?;
+
+-- Penalties
+selectPenaltyById:
+SELECT * FROM penalties WHERE id = ?;
+
+selectPenaltiesByEvent:
+SELECT * FROM penalties WHERE event_id = ?;
+
+selectPenaltiesByPlayer:
+SELECT * FROM penalties WHERE player_id = ?;
+
+selectPenaltiesByEventAndPlayer:
+SELECT * FROM penalties WHERE event_id = ? AND player_id = ?;
+
+selectPenaltiesByType:
+SELECT * FROM penalties WHERE type = ?;
+
+insertPenalty:
+INSERT INTO penalties(id, event_id, player_id, type, amount, description, created_at)
+VALUES (?, ?, ?, ?, ?, ?, ?);
+
+deletePenalty:
+DELETE FROM penalties WHERE id = ?;
+
+deletePenaltiesByEvent:
+DELETE FROM penalties WHERE event_id = ?;
+
+-- Coffin Games
+selectCoffinGameById:
+SELECT * FROM coffin_games WHERE id = ?;
+
+selectCoffinGameByEvent:
+SELECT * FROM coffin_games WHERE event_id = ?;
+
+selectAllCoffinGames:
+SELECT * FROM coffin_games;
+
+insertCoffinGame:
+INSERT INTO coffin_games(id, event_id, player_order, created_at)
+VALUES (?, ?, ?, ?);
+
+deleteCoffinGame:
+DELETE FROM coffin_games WHERE id = ?;
+
+deleteCoffinGameByEvent:
+DELETE FROM coffin_games WHERE event_id = ?;
+
+-- Coffin Turns
+selectTurnsByGame:
+SELECT * FROM coffin_turns WHERE game_id = ? ORDER BY turn_number;
+
+insertCoffinTurn:
+INSERT INTO coffin_turns(id, game_id, turn_number, player_id, score, boards_received)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteTurnsByGame:
+DELETE FROM coffin_turns WHERE game_id = ?;
+
+-- Coffin Eliminations
+selectEliminationsByGame:
+SELECT * FROM coffin_eliminations WHERE game_id = ? ORDER BY final_rank DESC;
+
+insertCoffinElimination:
+INSERT INTO coffin_eliminations(id, game_id, player_id, elimination_turn, final_rank)
+VALUES (?, ?, ?, ?, ?);
+
+deleteEliminationsByGame:
+DELETE FROM coffin_eliminations WHERE game_id = ?;
+
+-- Dog Sitters
+selectDogSitterById:
+SELECT * FROM dog_sitters WHERE id = ?;
+
+selectCurrentDogSitter:
+SELECT * FROM dog_sitters WHERE is_current = 1 LIMIT 1;
+
+selectDogSitterByEvent:
+SELECT * FROM dog_sitters WHERE event_id = ?;
+
+selectDogSittersByPlayer:
+SELECT * FROM dog_sitters WHERE player_id = ?;
+
+selectAllDogSitters:
+SELECT * FROM dog_sitters ORDER BY assigned_date DESC;
+
+insertDogSitter:
+INSERT INTO dog_sitters(id, event_id, player_id, assigned_date, is_current)
+VALUES (?, ?, ?, ?, ?);
+
+updateDogSitterCurrent:
+UPDATE dog_sitters SET is_current = ? WHERE id = ?;
+
+clearCurrentDogSitters:
+UPDATE dog_sitters SET is_current = 0;
+
+deleteDogSitter:
+DELETE FROM dog_sitters WHERE id = ?;
+
+-- Yearly Summaries
+selectYearlySummaryById:
+SELECT * FROM yearly_summaries WHERE id = ?;
+
+selectYearlySummaryByYear:
+SELECT * FROM yearly_summaries WHERE year = ?;
+
+selectAllYearlySummaries:
+SELECT * FROM yearly_summaries ORDER BY year DESC;
+
+insertYearlySummary:
+INSERT INTO yearly_summaries(id, year, overall_winner, wet_dog_winner, calculated_at)
+VALUES (?, ?, ?, ?, ?);
+
+deleteYearlySummary:
+DELETE FROM yearly_summaries WHERE id = ?;
+
+deleteYearlySummaryByYear:
+DELETE FROM yearly_summaries WHERE year = ?;
+
+-- Player Rankings
+selectRankingsBySummary:
+SELECT * FROM player_rankings WHERE summary_id = ? ORDER BY rank;
+
+insertPlayerRanking:
+INSERT INTO player_rankings(id, summary_id, player_id, best_n_scores, best_n_total, rank)
+VALUES (?, ?, ?, ?, ?, ?);
+
+deleteRankingsBySummary:
+DELETE FROM player_rankings WHERE summary_id = ?;
+
