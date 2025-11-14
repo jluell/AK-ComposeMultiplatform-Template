@@ -13,7 +13,8 @@ val koinApp = startKoin {
     modules(app)
 }
 
-inline fun <reified T : Any> get(vararg parameters: Any?): T = koinApp.koin.get<T> { parametersOf(*parameters) }
+inline fun <reified T : Any> get(vararg parameters: Any?): T =
+    koinApp.koin.get<T> { parametersOf(*parameters) }
 
 @Composable
 @OptIn(KoinInternalApi::class)

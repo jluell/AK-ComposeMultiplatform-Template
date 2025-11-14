@@ -25,6 +25,7 @@ kotlin {
             implementation(libs.ktor.client.logging)
             implementation(libs.kotlinx.serialization.json)
             implementation(libs.kotlinx.coroutines.core)
+            implementation(libs.kotlinx.datetime)
         }
         androidMain.dependencies {
             implementation(libs.ktor.client.android)
@@ -36,7 +37,11 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
-            implementation(libs.sqldelight.sqljs.driver)
+//            implementation(libs.sqldelight.sqljs.driver)
+            implementation("app.cash.sqldelight:web-worker-driver:2.0.2")
+            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.2"))
+            implementation(npm("sql.js", "1.6.2"))
+            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
         }
         jvmMain.dependencies {
             implementation(libs.ktor.client.jvm)

@@ -1,5 +1,6 @@
 import org.jetbrains.compose.reload.gradle.ComposeHotRun
 import org.jetbrains.kotlin.compose.compiler.gradle.ComposeFeatureFlag
+
 plugins {
     alias(libs.plugins.kotlin.multiplatform)
     alias(libs.plugins.kotlinx.serialization)
@@ -47,6 +48,7 @@ kotlin {
         }
         commonMain.dependencies {
             implementation(compose.components.resources)
+            implementation(compose.material3)
             implementation(libs.koin.compose.viewmodel.navigation)
             implementation(projects.shared.core)
             implementation(projects.shared.data)

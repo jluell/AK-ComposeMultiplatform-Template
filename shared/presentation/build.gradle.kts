@@ -39,8 +39,6 @@ kotlin {
             implementation(compose.material3)
         }
         androidMain.dependencies {
-            api(libs.androidx.appcompat)
-            api(libs.androidx.activity.compose)
             api(libs.kotlinx.coroutines.android)
         }
         jvmMain.dependencies {
