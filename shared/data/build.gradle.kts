@@ -37,11 +37,9 @@ kotlin {
         }
         jsMain.dependencies {
             implementation(libs.ktor.client.js)
+            // TODO: Keep an eye on SQLDelight WASM support; else use https://github.com/dellisd/sqldelight-sqlite-wasm/blob/main/build.gradle.kts
 //            implementation(libs.sqldelight.sqljs.driver)
-            implementation("app.cash.sqldelight:web-worker-driver:2.0.2")
-            implementation(npm("@cashapp/sqldelight-sqljs-worker", "2.0.2"))
-            implementation(npm("sql.js", "1.6.2"))
-            implementation(devNpm("copy-webpack-plugin", "9.1.0"))
+//            implementation(libs.web.worker.driver)
         }
         jvmMain.dependencies {
             implementation(libs.ktor.client.jvm)
